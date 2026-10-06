@@ -1,0 +1,4 @@
+async function api(task){let r;try{r=await fetch("/api/analyze",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({task,cv:S.cv,vacancy:S.vac,code:S.code})})}catch{throw"Sem ligação à internet. Verifica a rede e tenta novamente."}
+const j=await r.json().catch(()=>({}));if(!r.ok)throw r.status==402?"Código Premium inválido.":(j.error||"Não foi possível concluir a análise agora. Tenta novamente dentro de alguns instantes.");return j.data}
+async function runAnalysis(){S.busy=true;S.err="";S.step=3;render();track("analysis_started");try{S.res=await api("analyze");track("analysis_completed")}catch(e){S.err=e}S.busy=false;render()}
+async function gen(task,key,step){S.busy=true;S.err="";render();try{S[key]=await api(task)}catch(e){S.err=e;if(e.includes("Código")){S.code=""}}S.busy=false;S.step=step;render()}
